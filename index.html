@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Rigging Calculator</title>
+</head>
+
+<body>
+    <h1>Rigging Calculator</h1>
+    <h3>A tool to make rigging calculations easier!</h3>
+    <p>Calculation</p>
+    <select onChange="showApp(this.value)">
+        <option value="twoPoint">Load w/ 2 Points</option>
+        <option value="other">MORE COMING SOON!</option>
+    </select>
+    <p>Rounding</p>
+    <select onChange="changeRounding(this.value)">
+        <option value="0">Nearest Place</option>
+        <option value="1">Nearest 10th</option>
+        <option value="2" selected>Nearest 100th</option>
+        <option value="3">Nearest 1000th</option>
+        <option value="4">Nearest 10000th</option>
+    </select>
+    <div class="content">
+        <div id="twoPoint" onChange="calculate2Points(this)">
+            <p>H1</p>
+            <input id="H1">
+            <p>V1</p>
+            <input id="V1">
+            <p>H2</p>
+            <input id="H2">
+            <p>V2</p>
+            <input id="V2">
+            <p>Load</p>
+            <input id="load">
+            <p>L1</p>
+            <input id="L1" disabled>
+            <p>L2</p>
+            <input id="L2" disabled>
+            <p>Angle</p>
+            <input id="angle" disabled>
+            <p>Tension L1</p>
+            <input id="tensionL1" disabled>
+            <p>Tension L2</p>
+            <input id="tensionL2" disabled>
+            <p>Horizontal Force L1</p>
+            <input id="horizontalForceL1" disabled>
+            <p>Horizontal Force L2</p>
+            <input id="horizontalForceL2" disabled>
+            <p>Vertical Force L1</p>
+            <input id="verticalForceL1" disabled>
+            <p>Vertical Force L2</p>
+            <input id="verticalForceL2" disabled>
+        </div>
+        <div id="other">
+
+        </div>
+    </div>
+    <div id="footer">
+        <p>Rigging calculator made by Nicolas Baror</p>
+        <p>Open-source on <a href="https://github.com/nicnacnic/rigging-calculator">GitHub</a>!</p>
+        <p>Found a bug or incorrect result? Report it in the <a href="https://github.com/nicnacnic/rigging-calculator/issues">issue tracker</a>!</p>
+    </div>
+    <script>
+        let rounding = 2;
+        function showApp(value) {
+            let apps = document.querySelectorAll('.content div');
+            for (const app of apps) {
+                app.style.display = 'none';
+            }
+
+            document.querySelector(`.content #${value}`).style.display = 'block';
+        }
+        
+        function changeRounding(value) {
+            rounding = value;
+        }
+
+        function calculate2Points(div) {
+            const H1 = div.querySelector('#H1').value;
+            const V1 = div.querySelector('#V1').value;
+            const H2 = div.querySelector('#H2').value;
+            const V2 = div.querySelector('#V2').value;
+            const load = div.querySelector('#load').value;
+
+            let L1, L2, angle, tensionL1, tensionL2, horizontalForceL1, horizontalForceL2, verticalForceL1, verticalForceL2, denominator;
+            if (H1 && V1) L1 = Math.sqrt((H1 * H1) + (V1 * V1));
+            if (H2 && V2) L2 = Math.sqrt((H2 * H2) + (V2 * V2));
+            if (L1 && L2) angle = radToDeg(Math.atan(H1 / V1)) + radToDeg(Math.atan(H2 / V2));
+            if (load) {
+                denominator = denominator = (V1 * H2) + (V2 * H1);
+                tensionL1 = (load * L1 * H2) / denominator;
+                tensionL2 = (load * L2 * H1) / denominator;
+                verticalForceL1 = (V1 * H2 * load) / denominator;
+                verticalForceL2 = (V2 * H1 * load) / denominator;
+                horizontalForceL1 = verticalForceL1 * (H1 / V1);
+                horizontalForceL2 = verticalForceL2 * (H2 / V2);
+            }
+            
+            div.querySelector('#L1').value = (L1) ? +L1.toFixed(rounding) : '';
+            div.querySelector('#L2').value = (L2) ? +L2.toFixed(rounding) : '';
+            div.querySelector('#angle').value = (angle) ? +angle.toFixed(rounding) + '\u00B0' : '';
+            div.querySelector('#tensionL1').value = (tensionL1) ? +tensionL1.toFixed(rounding) : '';
+            div.querySelector('#tensionL2').value = (tensionL2) ? +tensionL2.toFixed(rounding) : '';
+            div.querySelector('#verticalForceL1').value = (verticalForceL1) ? +verticalForceL1.toFixed(rounding) : '';
+            div.querySelector('#verticalForceL2').value = (verticalForceL2) ? +verticalForceL2.toFixed(rounding) : '';
+            div.querySelector('#horizontalForceL1').value = (horizontalForceL1) ? +horizontalForceL1.toFixed(rounding) : '';
+            div.querySelector('#horizontalForceL2').value = (horizontalForceL2) ? +horizontalForceL2.toFixed(rounding) : '';
+        }
+
+        function radToDeg(number) {
+            return number * (180 / Math.PI);
+        }
+    </script>
+    <style>
+        .content div {
+            display: none;
+        }
+
+        #twoPoint {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #other {
+            width: 100%;
+            height: 100%;
+            background-color: blue;
+        }
+    </style>
+</body>
+
+</html>
